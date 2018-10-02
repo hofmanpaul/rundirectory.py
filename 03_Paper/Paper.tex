@@ -1,0 +1,39 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage{graphicx} %for pictures
+\usepackage{apacite} %For APA style references
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi} % This is for the stata tables. By putting it here rather than before each table we don't need to repeat it every time
+
+\graphicspath{ {../02_Output/} } %where pictures are
+
+\title{Example rundirectory.py}
+\author{Paul Hofman}
+\begin{document}
+
+\maketitle
+
+This document gives an example how rundirectory.py can pull together analysis and cleaning done in R, Stata and Python.
+
+For example, in R we compared balance across treatments:
+
+\begin{figure}[!htbp]\centering 
+	\includegraphics[width=\textwidth]{balance.jpg}
+\end{figure}
+
+It looks like we have balance! 
+
+Next, let's check if there is  a treatment effect: we analyse this in Stata.
+
+\begin{table}[!htbp]\centering
+    \begin{tabular}{l*{2}{r}}
+    	\hline\hline
+    	\input{../02_Output/results.tex}
+    	\hline\hline
+  	\end{tabular}
+\end{table}	
+
+Doesn't look like a treatment effect, that's a bummer but expected as \citeA{hofman2018} found the same.
+
+\bibliography{paperrefs}
+\bibliographystyle{apacite}
+
+\end{document}
