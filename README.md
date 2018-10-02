@@ -79,14 +79,14 @@ We’ll look at these in order
 ## Setup
 Remember the location for Stata we just found? This is where we declare it so Python knows where it program can be found. This will depend on which computer you are using. This also means that you will need to edit this each time you switch machines. With how Statacorp names its executables I think this is inevitable. Fortunately we only have to do this for Stata (so if you don’t use Stata you’re in luck!). What this looks like for me:
 ```python
-import os, subprocess, sys
+import os
+import subprocess
+import sys
 origWD = os.getcwd()
 
 statalocwin="C:/Program Files (x86)/Stata13/StataMP-64.exe"
 statalocmac="/Applications/Stata/StataMP.app/Contents/MacOS/stata-mp"
-
-print("Wait for the message DONE to show up. The stata dofiles run in the background so while it may look like the program is not working, it is.")
-print("Runtime is about 15-22 minutes")
+print("Wait for the message 'DONE' to show up. The Stata dofile run in the background so it might seem like the program is finished when it isn't")
 ```
 The first line imports several Python modules (or programs) that we’ll need at later points in the file. We also get and save the original working directory, because we’ll be switching back and forth to it.
 
@@ -95,40 +95,40 @@ Next we declare the Stata locations we found, (notice how they are the same as w
 ## Function definitions
 This is the important part. Here we declare several functions (one for each programming language) that python will run. Most of these are very simple, but it’s still important to declare them as functions to save lines and prevent ambiguity. 
 ```python
-def parseLocation(fileloc):
-	filepath=fileloc.split("/")
-	script=filepath[-1]
-	scriptdir="/".join(filepath[0:-1])
+def parse_location(fileloc):
+	filepath = fileloc.split("/")
+	script = filepath[-1]
+	scriptdir = "/".join(filepath[0:-1])
 	return script, scriptdir
 
-def runStata(fileloc):
+def run_stata(fileloc):
 	"""Run stata dofile in batch mode, deletes the log file and fix the working directory"""
-	script, scriptdir=parseLocation(fileloc)
+	script, scriptdir = parse_location(fileloc)
 	os.chdir(scriptdir)
-	if sys.platform=="win32":
+	if sys.platform == "win32":
 		subprocess.call([statalocwin, "-e", "do", script])
 	else:
 		subprocess.call([statalocmac, "-b", "do", script])
 	os.remove("{}.log".format(script[0:-3]))
 	os.chdir(origWD)
 
-def runPython(fileloc):
+def run_python(fileloc):
 	"""Run Python script and fix the working directory"""
-	script, scriptdir=parseLocation(fileloc)
+	script, scriptdir = parse_location(fileloc)
 	os.chdir(scriptdir)
 	subprocess.call(["python", script])  
 	os.chdir(origWD)
 
-def runR(fileloc):
+def run_R(fileloc):
 	"""Run R script and fix the working directory"""
-	script, scriptdir=parseLocation(fileloc)
+	script, scriptdir = parse_location(fileloc)
 	os.chdir(scriptdir)
 	subprocess.call(["Rscript", "--vanilla", script])
 	os.chdir(origWD)
 
-def runLatex(fileloc):
+def run_latex(fileloc):
 	"""Run a Tex script, run bibtex and then the Tex script twice more. Then fix the working directory"""
-	script, scriptdir=parseLocation(fileloc)
+	script, scriptdir = parse_location(fileloc)
 	os.chdir(scriptdir)
 	subprocess.call(["pdflatex", script])
 	subprocess.call(["bibtex", script[0:-4] ])
@@ -136,19 +136,22 @@ def runLatex(fileloc):
 	subprocess.call(["pdflatex", script])
 	os.chdir(origWD)
 ```
-The first function, parseLocation is a general function. It takes the location of a script and splits it out into two parts: the actual name of the script, and the location where it is. So it will take a location ("01_Data/01_Raw/merge.py") and split this out into the directory("01_Data/01_Raw“) and the filename (“merge.py”). We need to do this because running a file consists of three steps: Changing the directory to the location of the file, running the file, and changing the directory back. We need to change the working directory because that ensures that the script will work the same as if it is run individually.
+The first function, parse_location is a general function. It takes the location of a script and splits it out into two parts: the actual name of the script, and the location where it is. So it will take a location ("01_Data/01_Raw/merge.py") and split this out into the directory("01_Data/01_Raw“) and the filename (“merge.py”). We need to do this because running a file consists of three steps: Changing the directory to the location of the file, running the file, and changing the directory back. We need to change the working directory because that ensures that the script will work the same as if it is run individually.
 
-The second function, runStata runs a stata dofile. First we take the location of the file, and split it into the directory and the filename using the function we just wrote. Then we change the working directory to the location of the file. Next we check what OS we are on. In Windows Stata’s batch mode has different options, so we need to adapt the command based on the OS. Next, we run the actual file: ‘subprocess.call’ is the function in Python to run an external program.. Let’s look in detail at the details we give to this function: `statalocwin, “-e”, "do", script`. statalocwin is the variable where we saved the location of the windows version of Stata. The next option "-e", tells Stata that we want something run in Batch mode, and we want to suppress all confirmation messages. This ensures the program runs without our input. "do" tells stata we want to run a dofile. Finally, we add the name of the dofile we want to run. The subprocess.call function wants all these commands separately as a list, which is why it’s enclosed in square brackets with commas in between. On the mac we use the option "-b" instead of "-e", because the -e option is not allowed on mac. The results are the same. If you run Stata in batch mode it will automatically create a log file. I think logfiles are useless if you have a well-functioning dofile that outputs your results, so we delete it. Finally, we change the working directory back to the original working directory, and we are done!
+The second function, run_stata runs a stata dofile. First we take the location of the file, and split it into the directory and the filename using the function we just wrote. Then we change the working directory to the location of the file. Next we check what OS we are on. In Windows Stata’s batch mode has different options, so we need to adapt the command based on the OS. Next, we run the actual file: ‘subprocess.call’ is the function in Python to run an external program.. Let’s look in detail at the details we give to this function: `statalocwin, “-e”, "do", script`. statalocwin is the variable where we saved the location of the windows version of Stata. The next option "-e", tells Stata that we want something run in Batch mode, and we want to suppress all confirmation messages. This ensures the program runs without our input. "do" tells stata we want to run a dofile. Finally, we add the name of the dofile we want to run. The subprocess.call function wants all these commands separately as a list, which is why it’s enclosed in square brackets with commas in between. On the mac we use the option "-b" instead of "-e", because the -e option is not allowed on mac. The results are the same. If you run Stata in batch mode it will automatically create a log file. I think logfiles are useless if you have a well-functioning dofile that outputs your results, so we delete it. Finally, we change the working directory back to the original working directory, and we are done!
 
-The other three functions are similar and structure and even simpler, so I’ll describe them at once.  Once again we first split the location in the directory and the script name. We change the working directory to the script directory. Then we run the script, again using the subprocess.call function. For R we need an extra option “—vanilla”, this makes sure that R does not save workspace images, does not try to restore the session and does not use several user presets. For latex we need to run several commands: first Latex, then Bibtex and then Latex twice. This is the only way that Latex gets all the references/citations right.
+The other three functions are similar and structure and even simpler, so I’ll describe them at once.  Once again we first split the location in the directory and the script name. We change the working directory to the script directory. Then we run the script, again using the subprocess.call function. For R we need an extra option “—vanilla”, this makes sure that R does not save workspace images, does not try to restore the session and does not use several user presets. For Latex we need to run several commands: first Latex, then Bibtex and then Latex twice. This is the only way that Latex gets all the references/citations right.
 
 ## Running research scripts
 Now that we have all the setup done, it’s simply a matter of declaring the order we want these files to be run in (Figuring this out can be tough as well, so I suggest having a script like this from the start and continually update it). 
 ```python
-runPython("01_Data/01_Raw/merge.py")
-runR("01_Data/02_Clean/graphing.r")
-runStata("01_Data/02_Clean/analysis.do")
-runLatex("03_Paper/Paper.tex")
+run_python("01_Data/01_Raw/merge.py")
+
+run_R("01_Data/02_Clean/graphing.r")
+
+run_stata("01_Data/02_Clean/analysis.do")
+
+run_latex("03_Paper/Paper.tex")
 print(“DONE”)
 ```
 This is a simplified example, but it shows how nice this ends up looking. For each script you have one line, and it shows the exact location of each file (relative to rundirectory.py). I like to end with a print statement  but it’s totally optional. Most editors will tell you at the end how long a script has run as a closing.
