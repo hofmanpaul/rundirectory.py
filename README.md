@@ -160,6 +160,5 @@ And that’s it! Some remarks:
 
 - I had some difficulties with spaces in file names, especially with stata dofiles. My suggestion: never put spaces in file names. 
 - A nice text editor helps with working in Python and other scripting languages. Sublime text worked great for me. I’ve good things about Notepad++ and Atom as well. I also use Textmate, but I couldn’t get it to work with the subprocess command.
-- Stata batch mode has a really big issue: it does not tell you if a dofile has thrown an error and just happily keeps going. This can be potentially disastrous. I’ve seen some solutions to this online but nothing that is cross-platform. They all use either windows batch mode or shell files (Unix exclusive). I’m still figuring out a solution for this. 
 - Use forward slashes for all location definitions. That ensures it can also be run on Macs if you use Windows. It’s a good habit in general since markdown and Latex use it for special commands.
 - When switching machines, you’ll likely get some errors that are a bit unhelpful (e.g. cannot find the path specified). The way to troubleshoot this is to run the scripts individually. In my case this meant that some functions were not installed properly: I needed to install some R packages.

@@ -2,7 +2,7 @@
 
 *ssc install estout 
 
-cd "$GITLOC/sl-land-investments-addax/10_Example Rundirectory"
+cd "$GITLOC/rundirectory.py"
 
 import delimited using "01_Data/02_Clean/appended.csv", clear
 
