@@ -14,7 +14,7 @@ A quick note on why this is useful (though for a more comprehensive description 
 
 A single script overcomes these problems because it cannot be ambiguous or out of date. It tells the reader, but also the computer exactly what needs to be done to recreate a set of results (or in my example, even a paper!).
 
-So let’s get to automating! If you want to follow along, I've created a mock folder structure with example files in Python, R, Stata and Latex that will let you test if it's working on your machine. You can download it [here](https://www.dropbox.com/s/zlkoab0mhdchqix/rundirectory_example.zip?dl=0). You can also clone it from my github repo [here](https://github.com/hofmanpaul/rundirectory.py).
+So let’s get to automating! If you want to follow along, I've created a mock folder structure with example files in Python, R, Stata and Latex that will let you test if it's working on your machine. You can download it [here](https://www.dropbox.com/s/v1lh4edxv469ssk/rundirectory_example.zip?dl=0). You can also clone it from my github repo [here](https://github.com/hofmanpaul/rundirectory.py).
 
 How this approach works is it uses a function in Python called “subprocess”, which is able to run other apps (R, Stata, etc). You need to know where these apps can be found. What makes this more difficult is that the version of the program you want is sometimes not the same you use in day to day work. So let’s find them.
 
