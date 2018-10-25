@@ -105,10 +105,18 @@ def run_stata(fileloc):
 	"""Run stata dofile in batch mode, deletes the log file and fix the working directory"""
 	script, scriptdir = parse_location(fileloc)
 	os.chdir(scriptdir)
+
 	if sys.platform == "win32":
 		subprocess.call([statalocwin, "-e", "do", script])
 	else:
 		subprocess.call([statalocmac, "-b", "do", script])
+	
+	err=re.compile("^r\([0-9]+\);$")
+	with open("{}.log".format(script[0:-3]), 'r') as logfile:
+		for line in logfile:
+			if err.match(line):
+				sys.exit("Stata Error code {line} in {fileloc}".format(line=line[0:-2], fileloc=fileloc) )
+
 	os.remove("{}.log".format(script[0:-3]))
 	os.chdir(origWD)
 
@@ -138,7 +146,7 @@ def run_latex(fileloc):
 ```
 The first function, parse_location is a general function. It takes the location of a script and splits it out into two parts: the actual name of the script, and the location where it is. So it will take a location ("01_Data/01_Raw/merge.py") and split this out into the directory("01_Data/01_Raw“) and the filename (“merge.py”). We need to do this because running a file consists of three steps: Changing the directory to the location of the file, running the file, and changing the directory back. We need to change the working directory because that ensures that the script will work the same as if it is run individually.
 
-The second function, run_stata runs a stata dofile. First we take the location of the file, and split it into the directory and the filename using the function we just wrote. Then we change the working directory to the location of the file. Next we check what OS we are on. In Windows Stata’s batch mode has different options, so we need to adapt the command based on the OS. Next, we run the actual file: ‘subprocess.call’ is the function in Python to run an external program.. Let’s look in detail at the details we give to this function: `statalocwin, “-e”, "do", script`. statalocwin is the variable where we saved the location of the windows version of Stata. The next option "-e", tells Stata that we want something run in Batch mode, and we want to suppress all confirmation messages. This ensures the program runs without our input. "do" tells stata we want to run a dofile. Finally, we add the name of the dofile we want to run. The subprocess.call function wants all these commands separately as a list, which is why it’s enclosed in square brackets with commas in between. On the mac we use the option "-b" instead of "-e", because the -e option is not allowed on mac. The results are the same. If you run Stata in batch mode it will automatically create a log file. I think logfiles are useless if you have a well-functioning dofile that outputs your results, so we delete it. Finally, we change the working directory back to the original working directory, and we are done!
+The second function, run_stata runs a stata dofile. First we take the location of the file, and split it into the directory and the filename using the function we just wrote. Then we change the working directory to the location of the file. Next we check what OS we are on. In Windows Stata’s batch mode has different options, so we need to adapt the command based on the OS. Next, we run the actual file: ‘subprocess.call’ is the function in Python to run an external program.. Let’s look in detail at the details we give to this function: `statalocwin, “-e”, "do", script`. statalocwin is the variable where we saved the location of the windows version of Stata. The next option "-e", tells Stata that we want something run in Batch mode, and we want to suppress all confirmation messages. This ensures the program runs without our input. "do" tells stata we want to run a dofile. Finally, we add the name of the dofile we want to run. The subprocess.call function wants all these commands separately as a list, which is why it’s enclosed in square brackets with commas in between. On the mac we use the option "-b" instead of "-e", because the -e option is not allowed on mac. The results are the same. After the file has finished running we open the logfile to confirm that there were no errors in executing the stata file. If there are any, the program terminates and you will be notified of the error. I don't see the point of keeping the logfile around after that, so we delete it. Finally, we change the working directory back to the original working directory, and we are done!
 
 The other three functions are similar and structure and even simpler, so I’ll describe them at once.  Once again we first split the location in the directory and the script name. We change the working directory to the script directory. Then we run the script, again using the subprocess.call function. For R we need an extra option “—vanilla”, this makes sure that R does not save workspace images, does not try to restore the session and does not use several user presets. For Latex we need to run several commands: first Latex, then Bibtex and then Latex twice. This is the only way that Latex gets all the references/citations right.
 
@@ -159,6 +167,6 @@ This is a simplified example, but it shows how nice this ends up looking. For ea
 And that’s it! Some remarks:
 
 - I had some difficulties with spaces in file names, especially with stata dofiles. My suggestion: never put spaces in file names. 
-- A nice text editor helps with working in Python and other scripting languages. Sublime text worked great for me. I’ve good things about Notepad++ and Atom as well. I also use Textmate, but I couldn’t get it to work with the subprocess command.
+- A nice text editor helps with working in Python and other scripting languages. Sublime text worked great for me. I’ve heard good things about Notepad++ and Atom as well. I also use Textmate, but I couldn’t get it to work with the subprocess command.
 - Use forward slashes for all location definitions. That ensures it can also be run on Macs if you use Windows. It’s a good habit in general since markdown and Latex use it for special commands.
 - When switching machines, you’ll likely get some errors that are a bit unhelpful (e.g. cannot find the path specified). The way to troubleshoot this is to run the scripts individually. In my case this meant that some functions were not installed properly: I needed to install some R packages.
