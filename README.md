@@ -61,7 +61,7 @@ You first need to install Python: https://www.python.org/downloads/. I use versi
 Open Command Prompt and type “pdflatex”. If this doesn’t work, find out where Latex is installed in your program files folder and go several folders down. In my case, that is "C:/Program Files/MiKTeX 2.9/miktex/bin/x64".
 
 ## R Setup
-Open Command Prompt and type “Rscript”. If that doesn’t work, you probably have Rstudio installed. Open Rstudio and type `R.home(“bin”)`. That’s the location we want to add to the path (it might be too short to copy over, in that case navigate to that location to copy the directory over). CHECK
+Open Command Prompt and type “Rscript”. If that doesn’t work, you probably have Rstudio installed. Open Rstudio and type `R.home(“bin”)`. That’s the location we want to add to the path (it might be too short to copy over, in that case navigate to that location to copy the directory over).
 
 ## Stata Setup
 We are not going to put Stata in the path since it’s not very useful, but we still need to find the location. Navigate to where it is installed on your PC and copy the location, but also add the location of the executable. In my case: "C:/Program Files (x86)/Stata13/StataMP-64.exe". We’ll use this later.
