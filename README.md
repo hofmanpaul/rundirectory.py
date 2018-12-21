@@ -82,6 +82,7 @@ Remember the location for Stata we just found? This is where we declare it so Py
 import os
 import subprocess
 import sys
+import re
 origWD = os.getcwd()
 
 statalocwin="C:/Program Files (x86)/Stata13/StataMP-64.exe"
@@ -115,10 +116,14 @@ def run_stata(fileloc):
 	with open("{}.log".format(script[0:-3]), 'r') as logfile:
 		for line in logfile:
 			if err.match(line):
+				print(lastline)
+				print(line)
 				sys.exit("Stata Error code {line} in {fileloc}".format(line=line[0:-2], fileloc=fileloc) )
+				lastline=line
 
 	os.remove("{}.log".format(script[0:-3]))
 	os.chdir(origWD)
+
 
 def run_python(fileloc):
 	"""Run Python script and fix the working directory"""

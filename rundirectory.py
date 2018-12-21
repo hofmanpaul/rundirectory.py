@@ -28,7 +28,10 @@ def run_stata(fileloc):
 	with open("{}.log".format(script[0:-3]), 'r') as logfile:
 		for line in logfile:
 			if err.match(line):
+				print(lastline)
+				print(line)
 				sys.exit("Stata Error code {line} in {fileloc}".format(line=line[0:-2], fileloc=fileloc) )
+				lastline=line
 
 	os.remove("{}.log".format(script[0:-3]))
 	os.chdir(origWD)
