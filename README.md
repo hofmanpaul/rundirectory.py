@@ -171,6 +171,7 @@ This is a simplified example, but it shows how nice this ends up looking. For ea
 
 And that’s it! Some remarks:
 
+- There are some cross-platform differences between Stata, even between the console version (which this program uses) and the GUI version (which you usually use). Specifically: the console Stata for UNIX (so Mac and Linux) can't export images to .png, .pdf and .tif. This is really annoying but the only solution is to export your images to .eps instead. One advantage: the image files will be smaller and higher quality (.eps files are vector-based).
 - I had some difficulties with spaces in file names, especially with stata dofiles. My suggestion: never put spaces in file names. 
 - A nice text editor helps with working in Python and other scripting languages. Sublime text worked great for me. I’ve heard good things about Notepad++ and Atom as well. I also use Textmate, but I couldn’t get it to work with the subprocess command.
 - Use forward slashes for all location definitions. That ensures it can also be run on Macs if you use Windows. It’s a good habit in general since markdown and Latex use it for special commands.
